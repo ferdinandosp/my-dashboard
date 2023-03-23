@@ -23,3 +23,15 @@ import Route from '@ioc:Adonis/Core/Route'
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
 })
+
+Route
+  .group(() => {
+    Route.get('', async ({ view }) => {
+      const html = await view.render('register')
+
+      return html
+    })
+
+    Route.post('', 'RegisterUserController')
+  })
+  .prefix('/register')
