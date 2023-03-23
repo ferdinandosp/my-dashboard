@@ -35,3 +35,13 @@ Route
     Route.post('', 'RegisterUserController')
   })
   .prefix('/register')
+
+Route
+  .group(() => {
+    Route.get('', async ({ view }) => {
+      return await view.render('login')
+    })
+
+    Route.post('', 'UserLoginsController')
+  })
+  .prefix('/login')
