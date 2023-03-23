@@ -3,8 +3,36 @@ import User from 'App/Models/User'
 import { DateTime } from 'luxon';
 
 export default class RegisterUserController {
+  /**
+  * @swagger
+  * /register:
+  *   post:
+  *     tags:
+  *       - Users
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           description: Register new user
+  *           schema:
+  *             type: object
+  *             properties:
+  *               email:
+  *                 type: string
+  *                 example: 'james.bond@gmail.com'
+  *                 required: true
+  *               password:
+  *                 type: string
+  *                 example: 'zerozeroseven'
+  *                 required: true
+  *     produces:
+  *       - application/json
+  *     responses:
+  *       200:
+  *         description: Success
+  */
   public async handle(ctx: HttpContextContract) {
-    const { request } = ctx
+    const { request, response } = ctx
     const requestBody: Record<string, any> = request.body()
     const email: string = requestBody.email
     const password: string = requestBody.password
@@ -16,6 +44,6 @@ export default class RegisterUserController {
     user.updated_at = DateTime.now()
     await user.save()
 
-    return 'register successful'
+    response.redirect('/login')
   }
 }

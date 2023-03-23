@@ -1,27 +1,52 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import User from 'App/Models/User'
-
 
 export default class UserLoginsController {
+  /**
+  * @swagger
+  * /login:
+  *   post:
+  *     tags:
+  *       - Users
+  *     requestBody:
+  *       required: true
+  *       content:
+  *         application/json:
+  *           description: Login existing user
+  *           schema:
+  *             type: object
+  *             properties:
+  *               email:
+  *                 type: string
+  *                 example: 'james.bond@gmail.com'
+  *                 required: true
+  *               password:
+  *                 type: string
+  *                 example: 'zerozeroseven'
+  *                 required: true
+  *     produces:
+  *       - application/json
+  *     responses:
+  *       200:
+  *         description: Success
+  */
   public async handle(ctx: HttpContextContract) {
-    const { request } = ctx
+    const { auth, request, response, view } = ctx
     const requestBody: Record<string, any> = request.body()
     const email: string = requestBody.email
     const password: string = requestBody.password
-    const user: User | null = await User.findBy('email', email)
 
-    if (user) {
-      const isPasswordCorrect: boolean = await user?.verifyPassword(password)
-
-      if (isPasswordCorrect) {
-        // TODO: generate login token?
-        // TODO: store to access history table?
-        return 'logged in successfully'
-      }
-    } else {
-      return 'user not found'
+    try {
+      await auth.use('web').attempt(email, password)
+      response.redirect('/dashboard')
+    } catch {
+      response.send(
+        await view.render('login',
+          {
+            email: email,
+            error: 'Login failed'
+          }
+        )
+      )
     }
-
-    return 'log in failed'
   }
 }

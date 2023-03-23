@@ -39,9 +39,22 @@ Route
 Route
   .group(() => {
     Route.get('', async ({ view }) => {
-      return await view.render('login')
+      return await view.render('login', {email: '', error: ''})
     })
 
     Route.post('', 'UserLoginsController')
   })
   .prefix('/login')
+
+Route
+  .group(() => {
+    Route.get('', async ({ auth, view, response }) => {
+      await auth.use('web').authenticate()
+      if (auth.use('web').isLoggedIn) {
+        return await view.render('dashboard')
+      } else {
+        response.redirect('/login')
+      }
+    })
+  })
+  .prefix('/dashboard')
