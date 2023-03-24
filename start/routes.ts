@@ -46,6 +46,9 @@ Route
   })
   .prefix('/login')
 
+Route.get('/verify', 'VerifyUserController')
+Route.get('/generate-verify-token', 'GenerateVerificationTokenController')
+
 Route
   .group(() => {
     Route.get('', async ({ auth, view, response }) => {

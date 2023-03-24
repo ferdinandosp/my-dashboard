@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import EmailVerificationSender from 'App/Services/EmailVerificationSender';
 import { DateTime } from 'luxon';
 
 export default class RegisterUserController {
@@ -43,6 +44,9 @@ export default class RegisterUserController {
     user.created_at = DateTime.now()
     user.updated_at = DateTime.now()
     await user.save()
+
+    const emailSender: EmailVerificationSender = new EmailVerificationSender()
+    emailSender.sendEmail(user.email)
 
     response.redirect('/login')
   }
