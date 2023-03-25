@@ -32,7 +32,18 @@ export default class VerifyUserController {
       return response.unauthorized()
     }
 
-    var user: User
+    const user: User | null = await User.find(userId)
+
+    if (user === null) {
+      return response.notFound({error: 'user not found'})
+    }
+
+    if (user.email_verified === true) {
+      return response.badRequest({error: 'user already verified'})
+    }
+
+    user.markEmailVerified()
+    await user.save()
 
     return response.ok({})
   }

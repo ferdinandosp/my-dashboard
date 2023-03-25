@@ -41,12 +41,10 @@ export default class RegisterUserController {
     const user = new User()
     user.email = email
     user.password = password
-    user.created_at = DateTime.now()
-    user.updated_at = DateTime.now()
     await user.save()
 
     const emailSender: EmailVerificationSender = new EmailVerificationSender()
-    emailSender.sendEmail(user.email)
+    await emailSender.sendEmail(user.id, user.email)
 
     response.redirect('/login')
   }
