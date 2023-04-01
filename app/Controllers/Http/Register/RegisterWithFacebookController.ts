@@ -2,39 +2,37 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import EmailVerificationSender from 'App/Services/EmailVerificationSender'
 
-export default class RegisterWithGoogleController {
+export default class RegisterWithFacebookController {
   public async handle(ctx: HttpContextContract) {
     const { ally, response } = ctx
 
-    const google = ally.use('google')
+    const facebook = ally.use('facebook')
 
-    // validate google response
-    if (google.accessDenied()) {
+    // validate facebook response
+    if (facebook.accessDenied()) {
       return response.badRequest({ error: 'Access was denied' })
     }
 
-    if (google.stateMisMatch()) {
+    if (facebook.stateMisMatch()) {
       return response.badRequest({ error: 'Request expired. Try again.' })
     }
 
-    if (google.hasError()) {
-      return response.badRequest(google.getError())
+    if (facebook.hasError()) {
+      return response.badRequest(facebook.getError())
     }
 
-    const googleUser = await google.user()
-    const user = await User.findBy('email', googleUser.email)
+    const facebookUser = await facebook.user()
+    const user = await User.findBy('email', facebookUser.email)
 
     // check existing user
     if (user === null) {
       // create user if not exist
-      const isEmailVerified = googleUser.emailVerificationState === 'verified'
+      const isEmailVerified = facebookUser.emailVerificationState === 'verified'
 
       const newUser = new User()
-      newUser.email = googleUser.email!
+      newUser.email = facebookUser.email!
       newUser.email_verified = isEmailVerified
-      newUser.register_platform = 'google'
-
-      // TODO: If email is not verified, send email to verify?
+      newUser.register_platform = 'facebook'
 
       await newUser.save()
 
@@ -53,7 +51,7 @@ export default class RegisterWithGoogleController {
         return response.send({ message: 'Email verification sent' })
       }
     } else {
-      if (user.register_platform === 'google') {
+      if (user.register_platform === 'facebook') {
         // login
         await ctx.auth.use('web').login(user)
         return response.redirect('/dashboard')

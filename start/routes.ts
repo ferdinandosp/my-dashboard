@@ -26,10 +26,17 @@ Route.get('/', async ({ view }) => {
 
 Route
   .group(() => {
-    Route.get('', async ({ view }) => {
-      const html = await view.render('register')
+    Route.get('', async ({ auth, view, response }) => {
+      try {
+        await auth.use('web').authenticate()
+        if (auth.use('web').isLoggedIn) {
+          return response.redirect('/dashboard')
+        }
+      } catch {
+        console.log('not authenticated')
+      }
 
-      return html
+      return await view.render('register')
     })
 
     Route.get('/google/redirect', async ({ ally }) => {
@@ -38,13 +45,28 @@ Route
 
     Route.get('/google/callback', 'Register/RegisterWithGoogleController')
 
+    Route.get('/facebook/redirect', async ({ ally }) => {
+      return ally.use('facebook').redirect()
+    })
+
+    Route.get('/facebook/callback', 'Register/RegisterWithFacebookController')
+
     Route.post('', 'Register/RegisterUserController')
   })
   .prefix('/register')
 
 Route
   .group(() => {
-    Route.get('', async ({ view }) => {
+    Route.get('', async ({ auth, view, response }) => {
+      try {
+        await auth.use('web').authenticate()
+        if (auth.use('web').isLoggedIn) {
+          return response.redirect('/dashboard')
+        }
+      } catch {
+        console.log('not authenticated')
+      }
+
       return await view.render('login', {email: '', error: ''})
     })
 
@@ -52,7 +74,9 @@ Route
       return ally.use('google').redirect()
     })
 
-    Route.get('/google/callback', 'Login/LoginWithGoogleController')
+    Route.get('/facebook/redirect', async ({ ally }) => {
+      return ally.use('facebook').redirect()
+    })
 
     Route.post('', 'Login/UserLoginsController')
   })

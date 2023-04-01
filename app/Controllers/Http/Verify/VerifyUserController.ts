@@ -45,6 +45,6 @@ export default class VerifyUserController {
     user.markEmailVerified()
     await user.save()
 
-    return response.ok({})
+    return response.redirect('/dashboard')
   }
 }
