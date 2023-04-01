@@ -6,7 +6,9 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
+      table.string('name')
       table.string('email').notNullable().unique()
+      table.string('register_platform').notNullable().defaultTo('email')
       table.string('password')
       table.boolean('email_verified').notNullable().defaultTo(false)
       table.timestamp('created_at', { useTz: true })

@@ -24,7 +24,6 @@ export default class GenerateVerificationTokenController {
     const { request, response } = ctx
     const requestBody: Record<string, any> = request.qs()
     const userId: Number = requestBody.userId
-    console.log('user id', userId)
     var user: User | null = await User.find(userId)
 
     if (!user) {

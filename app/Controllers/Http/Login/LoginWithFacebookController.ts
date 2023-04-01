@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import StoreNewUserSession from 'App/Services/StoreNewUserSession'
 import User from 'App/Models/User'
 
 export default class LoginWithFacebookController {
@@ -24,6 +25,7 @@ export default class LoginWithFacebookController {
 
     if (user !== null) {
       await auth.use('web').login(user)
+      await StoreNewUserSession.handle(user.id)
       return response.redirect('/dashboard')
     }
 

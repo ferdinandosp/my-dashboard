@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import User from 'App/Models/User'
 
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
@@ -84,15 +85,35 @@ Route
 
 Route.post('/logout', 'Logout/LogoutController')
 
-Route.get('/verify', 'Verify/VerifyUserController')
-Route.get('/generate-verify-token', 'Verify/GenerateVerificationTokenController')
+Route
+  .group(() => {
+    Route.get('', async ({ auth, view }) => {
+      const user : User = await auth.authenticate()
+
+      if (user.email_verified) {
+        return view.render('dashboard', { message: 'Email already verified' })
+      }
+
+      return await view.render('verify')
+    })
+
+    Route.get('/now', 'Verify/VerifyUserController')
+    Route.post('/send-verify-email', 'Verify/SendVerificationEmailController')
+    Route.get('/generate-verify-token', 'Verify/GenerateVerificationTokenController')
+  })
+  .prefix('/verify')
 
 Route
   .group(() => {
     Route.get('', async ({ auth, view, response }) => {
-      await auth.use('web').authenticate()
+      const user : User = await auth.use('web').authenticate()
       if (auth.use('web').isLoggedIn) {
-        return await view.render('dashboard')
+        console.log('user', user.email_verified)
+        if (user.email_verified == true) {
+          return await view.render('dashboard')
+        } else {
+          return response.redirect('/verify')
+        }
       } else {
         response.redirect('/login')
       }

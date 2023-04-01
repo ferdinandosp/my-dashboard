@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import StoreNewUserSession from 'App/Services/StoreNewUserSession'
 import User from 'App/Models/User'
 import EmailVerificationSender from 'App/Services/EmailVerificationSender'
 
@@ -33,14 +34,15 @@ export default class RegisterWithGoogleController {
       newUser.email = googleUser.email!
       newUser.email_verified = isEmailVerified
       newUser.register_platform = 'google'
-
-      // TODO: If email is not verified, send email to verify?
+      newUser.name = googleUser.name
 
       await newUser.save()
 
       if (isEmailVerified) {
         // login user if email is verified
         await ctx.auth.use('web').login(newUser)
+
+        await StoreNewUserSession.handle(newUser.id)
 
         // return to dashboard page
         return response.redirect('/dashboard')
@@ -56,6 +58,9 @@ export default class RegisterWithGoogleController {
       if (user.register_platform === 'google') {
         // login
         await ctx.auth.use('web').login(user)
+
+        await StoreNewUserSession.handle(user.id)
+
         return response.redirect('/dashboard')
       } else {
         // response an error message saying register platform is different

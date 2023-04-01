@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import StoreNewUserSession from 'App/Services/StoreNewUserSession'
 
 export default class UserLoginsController {
   /**
@@ -37,6 +38,10 @@ export default class UserLoginsController {
 
     try {
       await auth.use('web').attempt(email, password)
+
+      const user = await auth.authenticate()
+      await StoreNewUserSession.handle(user.id)
+
       response.redirect('/dashboard')
     } catch {
       response.send(
