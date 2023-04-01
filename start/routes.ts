@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import View from '@ioc:Adonis/Core/View'
 
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
@@ -30,6 +31,34 @@ Route
       const html = await view.render('register')
 
       return html
+    })
+
+    Route.get('/google/redirect', async ({ ally }) => {
+      return ally.use('google').redirect()
+    })
+
+    Route.get('/google/callback', async ({ ally }) => {
+      const google = ally.use('google')
+
+      if (google.accessDenied()) {
+        return 'Access was denied'
+      }
+
+      if (google.stateMisMatch()) {
+        return 'Request expired. Try again.'
+      }
+
+      if (google.hasError()) {
+        return google.getError()
+      }
+
+      const user = await google.user()
+      console.log('user', user)
+
+      console.log('email', user.email)
+      console.log('is email verified', user.original.email_verified)
+
+      return View.render('welcome')
     })
 
     Route.post('', 'RegisterUserController')

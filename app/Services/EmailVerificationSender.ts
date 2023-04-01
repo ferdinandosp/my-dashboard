@@ -1,5 +1,5 @@
-import EmailService from "./EmailService";
-import JwtTokenService from "./JwtTokenService";
+import EmailService from "./EmailService"
+import JwtTokenService from "./JwtTokenService"
 import Env from '@ioc:Adonis/Core/Env'
 
 export default class EmailVerificationSender {

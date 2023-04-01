@@ -26,7 +26,8 @@
     "@adonisjs/shield",
     "@adonisjs/lucid",
     "adonis5-swagger",
-    "@adonisjs/auth"
+    "@adonisjs/auth",
+    "@adonisjs/ally"
   ],
   "metaFiles": [
     {
