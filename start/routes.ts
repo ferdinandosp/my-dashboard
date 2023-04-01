@@ -19,7 +19,6 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
-import View from '@ioc:Adonis/Core/View'
 
 Route.get('/', async ({ view }) => {
   return view.render('welcome')
@@ -37,31 +36,9 @@ Route
       return ally.use('google').redirect()
     })
 
-    Route.get('/google/callback', async ({ ally }) => {
-      const google = ally.use('google')
+    Route.get('/google/callback', 'Register/RegisterWithGoogleController')
 
-      if (google.accessDenied()) {
-        return 'Access was denied'
-      }
-
-      if (google.stateMisMatch()) {
-        return 'Request expired. Try again.'
-      }
-
-      if (google.hasError()) {
-        return google.getError()
-      }
-
-      const user = await google.user()
-      console.log('user', user)
-
-      console.log('email', user.email)
-      console.log('is email verified', user.original.email_verified)
-
-      return View.render('welcome')
-    })
-
-    Route.post('', 'RegisterUserController')
+    Route.post('', 'Register/RegisterUserController')
   })
   .prefix('/register')
 
@@ -71,12 +48,20 @@ Route
       return await view.render('login', {email: '', error: ''})
     })
 
-    Route.post('', 'UserLoginsController')
+    Route.get('/google/redirect', async ({ ally }) => {
+      return ally.use('google').redirect()
+    })
+
+    Route.get('/google/callback', 'Login/LoginWithGoogleController')
+
+    Route.post('', 'Login/UserLoginsController')
   })
   .prefix('/login')
 
-Route.get('/verify', 'VerifyUserController')
-Route.get('/generate-verify-token', 'GenerateVerificationTokenController')
+Route.post('/logout', 'Logout/LogoutController')
+
+Route.get('/verify', 'Verify/VerifyUserController')
+Route.get('/generate-verify-token', 'Verify/GenerateVerificationTokenController')
 
 Route
   .group(() => {

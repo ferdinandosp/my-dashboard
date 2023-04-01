@@ -16,6 +16,9 @@ export default class User extends BaseModel {
   public email_verified: boolean
 
   @column()
+  public register_platform: string
+
+  @column()
   public created_at: DateTime
 
   @column()
