@@ -128,3 +128,10 @@ Route
     Route.post('', 'Profile/UpdateUserProfileController')
   })
   .prefix('/profile')
+
+Route
+  .group(() => {
+    Route.get('', 'Profile/ViewResetPasswordPageController')
+    Route.post('', 'Profile/ResetPasswordController')
+  })
+  .prefix('/reset')
