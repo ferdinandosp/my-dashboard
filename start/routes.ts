@@ -120,3 +120,11 @@ Route
     })
   })
   .prefix('/dashboard')
+
+Route
+  .group(() => {
+    Route.get('', 'Profile/GetUserProfileController')
+
+    Route.post('', 'Profile/UpdateUserProfileController')
+  })
+  .prefix('/profile')

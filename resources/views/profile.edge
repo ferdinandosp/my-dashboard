@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Dashboard - Dashboard</title>
+  <title>My Dashboard - Profile</title>
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -83,13 +83,53 @@
   </style>
 </head>
 <body>
-  Dashboard page!
 
+  <form action="/profile" method="POST">
+    <div>
+      <p>
+        User profile
+      </p>
+    </div>
+    <div>
+      <p>
+        <label for="email">Email</label>
+      </p>
+
+      <input type="email" name="email" value="{{email?.value ?? ''}}" disabled />
+    </div>
+
+    @if(email?.error)
+    <div>
+      <p>
+        <label>{{email?.error}}</label>
+      </p>
+    </div>
+    @end
+
+    <div>
+      <p>
+        <label for="name">Name</label>
+      </p>
+
+      <input type="text" name="name" value="{{name?.value ?? ''}}" />
+    </div>
+
+    @if(name?.error)
+    <div>
+      <p>
+        <label>{{name.error}}</label>
+      </p>
+    </div>
+    @end
+
+    <div>
+      <button type="submit">Update</button>
+    </div>
+  </form>
   <form action="/logout" method="POST">
     <div>
       <button type="submit">Logout</button>
     </div>
   </form>
-  <a href='/profile'>Go to Profile page</a>
 </body>
 </html>
