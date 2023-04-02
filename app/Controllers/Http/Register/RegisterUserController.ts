@@ -49,6 +49,20 @@ export default class RegisterUserController {
       ))
     }
 
+    // check existing user duplicate
+    const existingUser = await User.findBy('email', email)
+    if (existingUser) {
+      return response.send(
+        await view.render('register',
+          {
+            email: {
+              value: email,
+              error: 'Email already exists'
+            },
+          }
+      ))
+    }
+
     // TODO: move the logic to check password to a service
     // validate password have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character.
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/
