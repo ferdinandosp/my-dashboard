@@ -84,20 +84,18 @@
   </style>
 </head>
 <body>
-  Dashboard page!
+  Dashboard Page
 
   <form action="/logout" method="POST">
     <div>
       <button type="submit">Logout</button>
     </div>
   </form>
-  <a href='/profile'>Go to Profile page</a>
-
-    <div style="height: 800px; width: 100%;" id="container"></div>
-    <script>
-      var rt =
-      window.retool.RetoolDashboard(document.getElementById('container'),
-      'https://nandprojects.retool.com/embedded/public/420a92e5-c4bc-4b68-bed8-10f50a814a9b')
-    </script>
+  <div style="height: 800px; width: 100%;" id="container"></div>
+  <script>
+    var rt =
+    window.retool.RetoolDashboard(document.getElementById('container'),
+    'https://nandprojects.retool.com/embedded/public/420a92e5-c4bc-4b68-bed8-10f50a814a9b')
+  </script>
 </body>
 </html>

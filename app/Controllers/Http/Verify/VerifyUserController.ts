@@ -21,7 +21,7 @@ export default class VerifyUserController {
   *         description: Success
   */
   public async handle (ctx: HttpContextContract) {
-    const { request, response } = ctx
+    const { auth, request, response } = ctx
     const param: Record<string, any> = request.qs()
     const token: string = param.token
 
@@ -44,6 +44,8 @@ export default class VerifyUserController {
 
     user.markEmailVerified()
     await user.save()
+
+    await auth.use('web').login(user)
 
     return response.redirect('/dashboard')
   }
