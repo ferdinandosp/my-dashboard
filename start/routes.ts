@@ -40,15 +40,11 @@ Route
       return await view.render('register')
     })
 
-    Route.get('/google/redirect', async ({ ally }) => {
-      return ally.use('google').redirect()
-    })
+    Route.get('/google/redirect', 'Register/GoogleRedirectController')
 
     Route.get('/google/callback', 'Register/RegisterWithGoogleController')
 
-    Route.get('/facebook/redirect', async ({ ally }) => {
-      return ally.use('facebook').redirect()
-    })
+    Route.get('/facebook/redirect', 'Register/FacebookRedirectController')
 
     Route.get('/facebook/callback', 'Register/RegisterWithFacebookController')
 

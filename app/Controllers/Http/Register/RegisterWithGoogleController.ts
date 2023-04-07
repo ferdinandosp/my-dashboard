@@ -1,7 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import StoreNewUserSession from 'App/Services/StoreNewUserSession'
 import User from 'App/Models/User'
-import EmailVerificationSender from 'App/Services/EmailVerificationSender'
 
 export default class RegisterWithGoogleController {
   public async handle(ctx: HttpContextContract) {
@@ -27,33 +26,22 @@ export default class RegisterWithGoogleController {
 
     // check existing user
     if (user === null) {
-      // create user if not exist
-      const isEmailVerified = googleUser.emailVerificationState === 'verified'
-
+      // create user if not exists
       const newUser = new User()
       newUser.email = googleUser.email!
-      newUser.email_verified = isEmailVerified
+      newUser.email_verified = true
       newUser.register_platform = 'google'
       newUser.name = googleUser.name
 
       await newUser.save()
 
-      if (isEmailVerified) {
-        // login user if email is verified
-        await ctx.auth.use('web').login(newUser)
+      // login user if email is verified
+      await ctx.auth.use('web').login(newUser)
 
-        await StoreNewUserSession.handle(newUser.id)
+      await StoreNewUserSession.handle(newUser.id)
 
-        // return to dashboard page
-        return response.redirect('/dashboard')
-      } else {
-        // send email verification
-        const emailSender: EmailVerificationSender = new EmailVerificationSender()
-        await emailSender.sendEmail(newUser.id, newUser.email)
-
-        // return a message stating that an email verification is sent
-        return response.send({ message: 'Email verification sent' })
-      }
+      // return to dashboard page
+      return response.redirect('/dashboard')
     } else {
       if (user.register_platform === 'google') {
         // login
