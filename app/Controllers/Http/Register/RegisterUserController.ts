@@ -9,6 +9,7 @@ export default class RegisterUserController {
   *   post:
   *     tags:
   *       - Users
+  *     summary: Register new user
   *     requestBody:
   *       required: true
   *       content:

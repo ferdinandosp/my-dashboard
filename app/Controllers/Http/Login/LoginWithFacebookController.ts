@@ -3,9 +3,7 @@ import StoreNewUserSession from 'App/Services/StoreNewUserSession'
 import User from 'App/Models/User'
 
 export default class LoginWithFacebookController {
-  public async handle(ctx: HttpContextContract) {
-    const { ally, auth, response, view } = ctx
-
+  public async handle({ ally, auth, response, view }: HttpContextContract) {
     const facebook = ally.use('facebook')
     const facebookUser = await facebook.user()
 

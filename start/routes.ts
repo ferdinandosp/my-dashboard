@@ -101,26 +101,13 @@ Route
 
 Route
   .group(() => {
-    Route.get('', async ({ auth, view, response }) => {
-      const user : User = await auth.use('web').authenticate()
-      if (auth.use('web').isLoggedIn) {
-        console.log('user', user.email_verified)
-        if (user.email_verified == true) {
-          return await view.render('dashboard')
-        } else {
-          return response.redirect('/verify')
-        }
-      } else {
-        response.redirect('/login')
-      }
-    })
+    Route.get('', 'Dashboard/DashboardController')
   })
   .prefix('/dashboard')
 
 Route
   .group(() => {
     Route.get('', 'Profile/GetUserProfileController')
-
     Route.post('', 'Profile/UpdateUserProfileController')
   })
   .prefix('/profile')
