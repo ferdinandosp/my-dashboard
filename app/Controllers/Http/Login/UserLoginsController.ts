@@ -8,6 +8,7 @@ export default class UserLoginsController {
   *   post:
   *     tags:
   *       - Users
+  *     summary: Login existing user
   *     requestBody:
   *       required: true
   *       content:
@@ -29,9 +30,11 @@ export default class UserLoginsController {
   *     responses:
   *       200:
   *         description: Success
+  *       400:
+  *         description: Invalid credentials
   */
   public async handle(ctx: HttpContextContract) {
-    const { auth, request, response, view } = ctx
+    const { auth, request, response } = ctx
     const requestBody: Record<string, any> = request.body()
     const email: string = requestBody.email
     const password: string = requestBody.password
@@ -42,16 +45,9 @@ export default class UserLoginsController {
       const user = await auth.authenticate()
       await StoreNewUserSession.handle(user.id)
 
-      response.redirect('/dashboard')
+      response.ok({})
     } catch {
-      response.send(
-        await view.render('login',
-          {
-            email: email,
-            error: 'Login failed'
-          }
-        )
-      )
+      response.badRequest({ message: 'Invalid credentials' })
     }
   }
 }
