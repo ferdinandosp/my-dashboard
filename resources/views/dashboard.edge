@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Dashboard - Dashboard</title>
   <link href="https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tryretool.com/embed.js"> </script>
   <style>
     html, body {
       background-color: #F7F8FA;
@@ -91,5 +92,12 @@
     </div>
   </form>
   <a href='/profile'>Go to Profile page</a>
+
+    <div style="height: 800px; width: 100%;" id="container"></div>
+    <script>
+      var rt =
+      window.retool.RetoolDashboard(document.getElementById('container'),
+      'https://nandprojects.retool.com/embedded/public/420a92e5-c4bc-4b68-bed8-10f50a814a9b')
+    </script>
 </body>
 </html>
