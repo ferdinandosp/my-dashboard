@@ -60,8 +60,8 @@ Route
         if (auth.use('web').isLoggedIn) {
           return response.redirect('/dashboard')
         }
-      } catch {
-        console.log('not authenticated')
+      } catch (e) {
+        return response.unauthorized({ message: 'You are not logged in' })
       }
 
       return await view.render('login', {email: '', error: ''})

@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
+import ResetPasswordValidator from 'App/Validators/ResetPasswordValidator'
 
 export default class ResetPasswordController {
   /**
@@ -42,33 +43,28 @@ export default class ResetPasswordController {
     const user: User = await auth.authenticate()
 
     if (!user) {
-      return response.redirect('/login')
+      return response.unauthorized({
+        message: 'User not found'
+      })
     }
 
-    const { current_password, password, password_confirmation } = request.all()
+    let payload
+    try {
+      payload = await request.validate(ResetPasswordValidator)
+    } catch (e) {
+      return response.badRequest({
+        message: e.messages
+      })
+    }
 
     // validate current password
-    if (!await user.verifyPassword(current_password)) {
+    if (!await user.verifyPassword(payload.current_password)) {
       return response.badRequest({
         message: 'Current password is incorrect'
       })
     }
 
-    if (password !== password_confirmation) {
-      return response.badRequest({
-        message: 'Passwords do not match'
-      })
-    }
-
-    // validate password have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character.
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/
-    if (!passwordRegex.test(password)) {
-      return response.badRequest({
-        message: 'Password must have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character'
-      })
-    }
-
-    user.password = password
+    user.password = payload.password
     await user.save()
 
     return response.ok({

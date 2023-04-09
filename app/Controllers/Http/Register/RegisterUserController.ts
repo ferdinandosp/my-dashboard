@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import EmailVerificationSender from 'App/Services/EmailVerificationSender';
+import RegisterUser from 'App/Validators/RegisterUserValidator';
 
 export default class RegisterUserController {
   /**
@@ -35,43 +36,28 @@ export default class RegisterUserController {
   *         description: Email already registered, or password is not valid
   */
   public async handle(ctx: HttpContextContract) {
-    const { request, response, view } = ctx
-    const requestBody: Record<string, any> = request.body()
-    const email: string = requestBody.email
-    const password: string = requestBody.password
+    const { request, response } = ctx
 
-    if (!email) {
-      return response.send(
-        await view.render('register',
-          {
-            email: {
-              error: 'Email is required'
-            },
-            password: { value: password }
-          }
-      ))
+    let payload
+    try {
+      payload = await request.validate(RegisterUser)
+    } catch (e) {
+      return response.badRequest({
+        message: e.messages
+      })
     }
 
     // check existing user duplicate
-    const existingUser = await User.findBy('email', email)
+    const existingUser = await User.findBy('email', payload.email)
     if (existingUser) {
       return response.badRequest({
         message: 'Email is already registered'
       })
     }
 
-    // TODO: move the logic to check password to a service
-    // validate password have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character.
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/
-    if (!passwordRegex.test(password)) {
-      return response.badRequest({
-        message: 'Password must have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character.'
-      })
-    }
-
     const user = new User()
-    user.email = email
-    user.password = password
+    user.email = payload.email
+    user.password = payload.password
     await user.save()
 
     const emailSender: EmailVerificationSender = new EmailVerificationSender()

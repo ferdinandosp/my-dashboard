@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import StoreNewUserSession from 'App/Services/StoreNewUserSession'
+import LoginUserValidator from 'App/Validators/LoginUserValidator'
 
 export default class UserLoginsController {
   /**
@@ -35,12 +36,18 @@ export default class UserLoginsController {
   */
   public async handle(ctx: HttpContextContract) {
     const { auth, request, response } = ctx
-    const requestBody: Record<string, any> = request.body()
-    const email: string = requestBody.email
-    const password: string = requestBody.password
+
+    let payload
+    try {
+      payload = await request.validate(LoginUserValidator)
+    } catch (e) {
+      return response.badRequest({
+        message: e.messages
+      })
+    }
 
     try {
-      await auth.use('web').attempt(email, password)
+      await auth.use('web').attempt(payload.email, payload.password)
 
       const user = await auth.authenticate()
       await StoreNewUserSession.handle(user.id)
