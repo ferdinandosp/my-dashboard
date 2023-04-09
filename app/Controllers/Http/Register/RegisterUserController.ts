@@ -31,6 +31,8 @@ export default class RegisterUserController {
   *     responses:
   *       200:
   *         description: Success
+  *       400:
+  *         description: Email already registered, or password is not valid
   */
   public async handle(ctx: HttpContextContract) {
     const { request, response, view } = ctx
@@ -53,30 +55,18 @@ export default class RegisterUserController {
     // check existing user duplicate
     const existingUser = await User.findBy('email', email)
     if (existingUser) {
-      return response.send(
-        await view.render('register',
-          {
-            email: {
-              value: email,
-              error: 'Email already exists'
-            },
-          }
-      ))
+      return response.badRequest({
+        message: 'Email is already registered'
+      })
     }
 
     // TODO: move the logic to check password to a service
     // validate password have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character.
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/
     if (!passwordRegex.test(password)) {
-      return response.send(
-        await view.render('register',
-          {
-            email: { value: email },
-            password: {
-              error: 'Password must have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character'
-            }
-          }
-      ))
+      return response.badRequest({
+        message: 'Password must have at least 1 lower character, 1 upper character, 1 digit character, 1 special character, and at least 8 character.'
+      })
     }
 
     const user = new User()
@@ -87,6 +77,8 @@ export default class RegisterUserController {
     const emailSender: EmailVerificationSender = new EmailVerificationSender()
     await emailSender.sendEmail(user.id, user.email)
 
-    response.redirect('/login')
+    return response.ok({
+      message: 'User registered successfully'
+    })
   }
 }
