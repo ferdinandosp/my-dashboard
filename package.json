@@ -6,6 +6,7 @@
     "dev": "node ace serve --watch",
     "build": "node ace build --production",
     "start": "node server.js",
+    "start:ssl": "node server.js --secure --key /etc/letsencrypt/live/dashboard.nandprojects.com/privkey.pem --cert /etc/letsencrypt/live/dashboard.nandprojects.com/fullchain.pem",
     "test": "node ace test"
   },
   "devDependencies": {
