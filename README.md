@@ -1,6 +1,8 @@
 # My Dashboard
 This is a web app that will show statistics of users who signs up & login access timestamps.
 
+* Click [here](https://dashboard.nandprojects.com) to go to the live URL.
+
 ## Prerequisites
 * [Node.js](https://nodejs.org/en/download) (version 14 or higher)
 * [PostgreSQL](https://www.postgresql.org/download/) (version 12 or higher)
